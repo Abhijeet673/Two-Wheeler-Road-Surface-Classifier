@@ -1,3 +1,5 @@
+# This script is for counting the dataset
+
 import os
 import csv
 
