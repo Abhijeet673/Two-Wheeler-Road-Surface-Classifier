@@ -1,63 +1,36 @@
+import pandas as pd
 import os
-import csv
 
-def split_csv(input_file, output_folder, rows_per_file=250):
-    """
-    Splits a given CSV file into smaller CSV files with a specified number of rows.
+def split_csv(file_path, output_dir, chunk_size=250, file_index=1):
+    # Read the CSV file
+    df = pd.read_csv(file_path)
     
-    :param input_file: Path to the large CSV file to split.
-    :param output_folder: Folder where the smaller CSV files will be saved.
-    :param rows_per_file: Number of rows in each smaller CSV file.
-    """
-    with open(input_file, 'r', newline='', encoding='utf-8') as infile:
-        csv_reader = csv.reader(infile)
-        headers = next(csv_reader)  # Read the header row
-
-        # Initialize variables
-        file_count = 1
-        rows = []
-
-        for row in csv_reader:
-            rows.append(row)
-            # If the rows reached the threshold, write them to a new file
-            if len(rows) >= rows_per_file:
-                output_file = os.path.join(output_folder, f"{os.path.splitext(os.path.basename(input_file))[0]}_part{file_count}.csv")
-                with open(output_file, 'w', newline='', encoding='utf-8') as outfile:
-                    csv_writer = csv.writer(outfile)
-                    csv_writer.writerow(headers)  # Write header to each smaller CSV
-                    csv_writer.writerows(rows)    # Write the rows
-                rows = []  # Reset rows for next chunk
-                file_count += 1
-
-        # Write remaining rows (if any)
-        if rows:
-            output_file = os.path.join(output_folder, f"{os.path.splitext(os.path.basename(input_file))[0]}_part{file_count}.csv")
-            with open(output_file, 'w', newline='', encoding='utf-8') as outfile:
-                csv_writer = csv.writer(outfile)
-                csv_writer.writerow(headers)
-                csv_writer.writerows(rows)
-
-def process_folder(input_folder, output_folder, rows_per_file=250):
-    """
-    Processes all CSV files in the input folder and splits them into smaller CSV files.
+    # Get the base filename without extension
+    base_filename = os.path.splitext(os.path.basename(file_path))[0]
     
-    :param input_folder: Folder containing the large CSV files.
-    :param output_folder: Folder where the smaller CSV files will be saved.
-    :param rows_per_file: Number of rows per smaller CSV file.
-    """
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    # Create a numbered folder for the file inside the output directory
+    file_output_dir = os.path.join(output_dir, f"{file_index:03d}_{base_filename}")
+    os.makedirs(file_output_dir, exist_ok=True)
+    
+    # Calculate number of full chunks
+    num_chunks = len(df) // chunk_size
+    
+    # Split and save each chunk
+    for i in range(num_chunks):
+        chunk = df[i * chunk_size : (i + 1) * chunk_size]
+        output_file = os.path.join(file_output_dir, f"{file_index:03d}_{base_filename}_part_{i+1:03d}.csv")
+        chunk.to_csv(output_file, index=False)
+        print(f"Saved: {output_file}")
+    
+    print(f"Splitting complete for {file_path}. Any remaining rows (less than 250) have been discarded.")
 
-    # Iterate through each file in the folder
-    for filename in os.listdir(input_folder):
+# Usage example
+input_folder = 'F:/Study/sem 6/Mini Project/TWRSC_2/Two-Wheeler-Road-Surface-Classifier-main/04 Preprocessed Data/FInal Data/Kanker'  # Replace with your folder containing large CSV files
+output_folder = 'F:/Study/sem 6/Mini Project/Abhijeet_Preprocessed_Data/kanker_processed'  # Replace with your desired output folder
+os.makedirs(output_folder, exist_ok=True)
+
+for file_index, filename in enumerate(sorted(os.listdir(input_folder)), start=1):
+    if filename.endswith(".csv"):
         file_path = os.path.join(input_folder, filename)
-        
-        if os.path.isfile(file_path) and filename.endswith('.csv'):
-            print(f"Processing file: {filename}")
-            split_csv(file_path, output_folder, rows_per_file)
+        split_csv(file_path, output_folder, file_index=file_index)
 
-if __name__ == "__main__":
-    input_folder = 'F:/Study/sem 6/Mini Project/TWRSC_2/Two-Wheeler-Road-Surface-Classifier-main/04 Preprocessed Data/FInal Data/Bitumin'  # Replace with your folder containing large CSV files
-    output_folder = 'bitumin_processed'  # Replace with your desired output folder
-    
-    process_folder(input_folder, output_folder)
