@@ -83,7 +83,7 @@ We can use MIT App Inventor for this part.
 
 <details>
   <summary  style="font-size: 15px; font-weight: bold; display: flex; justify-content: center;">3. Dataset Labelling and Pre-processing</summary>
-Comming Soon
+The Dataset has 9 colums which are as : "ID","SrNo","TimeStamp", "X_Acc","Y_Acc","Z_Acc","X_Gyro","Y_Gyro" and "Z_Gyro". Here instead of specifying the y label we have seperated the data or csv files of each classes to the respective folder i.e. "Bitumin","Concrete", "Kanker" and "Block". 
 </details>
 
 ---
@@ -91,7 +91,7 @@ Comming Soon
 
 <details>
   <summary  style="font-size: 15px; font-weight: bold; display: flex; justify-content: center;">4. Model Architecture</summary>
-Comming Soon
+This model is a sequential neural network designed for multi-class classification tasks involving time series or sequential data. It starts with an LSTM layer of 64 units that returns sequences, followed by a dropout layer to prevent overfitting. A second LSTM layer with 32 units further processes the temporal patterns, again followed by dropout. The dense layer with 32 units and ReLU activation captures non-linear relationships, and the final softmax layer outputs probabilities across four classes. The batch size is "32" and epoch size is "50".
 </details>
 
 ---
@@ -99,7 +99,7 @@ Comming Soon
 
 <details>
   <summary  style="font-size: 15px; font-weight: bold; display: flex; justify-content: center;">5. Model Training</summary>
-Comming Soon
+The LSTM model is trained using the training data (X_train, y_train) over a maximum of 50 epochs with a batch size of 32. To avoid overfitting and improve generalization, an early stopping callback is used, which monitors the validation loss (val_loss). If the validation loss does not improve for 5 consecutive epochs, training is halted, and the model restores the best weights observed during the training process. The model also evaluates its performance on a validation set (X_val, y_val) after each epoch to guide this early stopping. 
 </details>
 
 ---
@@ -107,7 +107,7 @@ Comming Soon
 
 <details>
   <summary  style="font-size: 15px; font-weight: bold; display: flex; justify-content: center;">6. Model Optimization & Comparison</summary>
-Comming Soon
+Since we have a little unbalanced data because of greate number of data samples under "Bitumin" class and lowest number of data samples under "Kanker" class the model trained will have a little bias. To prevent that we have preprocessed the data so that each classes have same number of data samples. 
 </details>
 
 ---
